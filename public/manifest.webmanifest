@@ -1,0 +1,1 @@
+{"name":"Waves AI Assistant","short_name":"Waves AI","start_url":"/","display":"standalone","background_color":"#100e18","theme_color":"#100e18","description":"A fluid, expressive AI assistant powered by your Groq API key.","icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
