@@ -27,3 +27,18 @@
  .setupBeam .setupHint{font-size:11px}
  .thinkingTrack{font-size:10px}
 }
+/* Keep the welcome canvas clear of the fixed composer on compact screens */
+.welcomeWrap{align-items:flex-start;padding:26px 24px 145px}
+.welcome{padding:0 10px}
+.heroOrb{width:48px;height:48px;margin-bottom:9px}
+.heroOrb canvas{width:48px!important;height:48px!important}
+.eyebrow{margin-bottom:12px}
+.starterGrid{margin-top:22px;gap:9px}
+.starter{height:68px}
+@media(max-width:700px){
+ .welcomeWrap{padding:22px 18px 170px}
+ .heroOrb{width:44px;height:44px;margin-bottom:8px}
+ .heroOrb canvas{width:44px!important;height:44px!important}
+ .eyebrow{margin-bottom:12px}
+ .starterGrid{margin-top:22px}
+}
