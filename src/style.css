@@ -6,3 +6,24 @@
 /* Distortion Waves (MIT, https://github.com/Jakubantalik/Libraries.dev) */
 .waveSurface{width:100%;height:100dvh;overflow:hidden}
 .waveSurface>[data-dw-layer="content"]{min-width:0;min-height:0}
+
+/* Libraries.dev Beam, Orbs and Voice — active chat states, not static mockups */
+.heroOrb{width:64px;height:64px;margin:0 0 17px;filter:drop-shadow(0 8px 26px #c19cff24)}
+.setupBeam{display:inline-flex;margin-top:22px;border-radius:12px;vertical-align:top}
+.setupBeam .setupHint{margin:0}
+.composerBeam{display:block;width:100%;border-radius:20px;transition:filter .25s}
+.composerVoice{display:block;width:100%;border-radius:20px}
+.composerVoice>.composerBox{width:100%}
+.composerBeam[data-beam-active="true"]{filter:drop-shadow(0 5px 18px #c8a4ff15)}
+.thinkingMessage .msgBody{min-width:190px}
+.thinkingLabel{font-size:10px;font-weight:400;color:var(--muted);margin-left:7px;letter-spacing:0}
+.thinkingTrack{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;padding:3px 0}
+.thinkingTrack canvas{flex:none;opacity:.82}
+.orbAvatar{display:grid;place-items:center;overflow:visible}
+@media(max-width:700px){
+ .heroOrb{width:54px;height:54px;margin-bottom:14px}
+ .heroOrb canvas{width:54px!important;height:54px!important}
+ .setupBeam{max-width:100%}
+ .setupBeam .setupHint{font-size:11px}
+ .thinkingTrack{font-size:10px}
+}
