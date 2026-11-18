@@ -29,3 +29,6 @@ The reference is [Libraries.dev — Waves](https://libraries.dev/waves). The acc
 ## Deployment
 
 Static Vite build output is in `dist/`; this repository is configured for Vercel's standard Vite build (`pnpm build`, output `dist`).
+
+## Distortion Waves
+This app vendors the React implementation from `packages/distortion-waves` in [Jakub Antalik's Libraries.dev repository](https://github.com/Jakubantalik/Libraries.dev), under its MIT license. The app uses the documented `DistortionWave` component and `ref.play({ source })` pattern to launch the vertical colorful wave from the send button. Source files and the MIT notice are retained in `src/vendor/distortion-waves/`.

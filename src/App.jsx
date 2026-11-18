@@ -1,4 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {DistortionWave} from './vendor/distortion-waves';
 import {ArrowDown,ArrowUp,ChevronDown,Command,Menu,MessageSquarePlus,MoreHorizontal,Paperclip,PanelLeftClose,PanelLeftOpen,Plus,Settings, Sparkles, SquarePen, Sun, Moon, Trash2, X, ShieldCheck, KeyRound, Copy, Check, Bot, User, AudioLines, WandSparkles} from 'lucide-react';
 const starters=[
  {icon:'✦',title:'アイデアを広げる',prompt:'週末にできる、小さくて楽しい創作アイデアを5つ考えて。'},
@@ -13,7 +14,7 @@ function App(){
  const [messages,setMessages]=useState([]); const [input,setInput]=useState(''); const [loading,setLoading]=useState(false); const [error,setError]=useState('');
  const [settings,setSettings]=useState(false); const [sidebar,setSidebar]=useState(true); const [light,setLight]=useState(false); const [conversations,setConversations]=useState(()=>JSON.parse(localStorage.getItem('waves-chats')||'[]'));
  const [activeId,setActiveId]=useState(null); const [keysReady,setKeysReady]=useState(false); const [streaming,setStreaming]=useState(false);
- const composer=useRef(null),endRef=useRef(null),sendRef=useRef(null); const [reveal,setReveal]=useState(false); const [waveActive,setWaveActive]=useState(false);
+ const composer=useRef(null),endRef=useRef(null),sendRef=useRef(null),waveRef=useRef(null);
  useEffect(()=>{sessionStorage.setItem('waves-groq-key',apiKey)},[apiKey]); useEffect(()=>{localStorage.setItem('waves-chats',JSON.stringify(conversations))},[conversations]);
  useEffect(()=>{endRef.current?.scrollIntoView({behavior:'smooth'})},[messages,loading]);
  useEffect(()=>{if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{})},[]);
@@ -23,11 +24,11 @@ function App(){
  const loadModels=async()=>{if(!apiKey.trim()){setError('設定からGroq APIキーを入力してください。');return}setError('');try{let r=await fetch('https://api.groq.com/openai/v1/models',{headers:{Authorization:`Bearer ${apiKey}`}});if(!r.ok)throw new Error(`APIキーを確認してください (${r.status})`);let d=await r.json();let ids=(d.data||[]).map(x=>x.id).filter(Boolean);if(ids.length){setModels(ids);if(!ids.includes(model))setModel(ids[0]);setKeysReady(true);return true}return false}catch(e){setError(e.message||'モデル一覧を取得できませんでした。');return false} };
  useEffect(()=>{if(apiKey)loadModels()},[]);
  const send=async(text=input)=>{let content=text.trim();if(!content||loading)return;if(!apiKey.trim()){setSettings(true);setError('Groq APIキーを設定すると会話できます。');return}
-  const history=[...shown,{role:'user',content}];const conversationId=activeId||crypto.randomUUID();if(!activeId)setActiveId(conversationId);updateConversation(history,conversationId);setInput('');setLoading(true);setWaveActive(true);setTimeout(()=>setWaveActive(false),1150);setError('');
+  const history=[...shown,{role:'user',content}];const conversationId=activeId||crypto.randomUUID();if(!activeId)setActiveId(conversationId);updateConversation(history,conversationId);setInput('');setLoading(true);setError('');waveRef.current?.play({source:sendRef.current});
   try{const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${apiKey}`},body:JSON.stringify({model,messages:history.map(({role,content})=>({role,content})),temperature:0.7,max_completion_tokens:2048})});const data=await res.json();if(!res.ok)throw new Error(data.error?.message||`Groq API エラー (${res.status})`);const answer=data.choices?.[0]?.message?.content||'応答がありませんでした。';updateConversation([...history,{role:'assistant',content:answer}],conversationId);}catch(e){setError(e.message||'接続できませんでした。');updateConversation(history,conversationId)}finally{setLoading(false)} };
  const deleteChat=(id,e)=>{e.stopPropagation();setConversations(cs=>cs.filter(c=>c.id!==id));if(activeId===id)startNew()};
  const newPrompt=(text)=>{setInput(text);composer.current?.focus()};
- return <main className={light?'app light':'app'}>
+ return <DistortionWave ref={waveRef} className="waveSurface" style={{width:'100%',height:'100dvh',overflow:'hidden'}} type="vertical" palette="colorful" reducedMotion="system"><main className={light?'app light':'app'}>
   <aside className={`sidebar ${sidebar?'':'closed'}`}>
    <div className="sideTop"><div className="brand"><span className="brandMark"><span></span><span></span></span><span>Waves</span></div><button className="iconBtn" aria-label="メニュー" onClick={()=>setSidebar(false)}><PanelLeftClose size={18}/></button></div>
    <button className="newChat" onClick={startNew}><SquarePen size={17}/><span>新しいチャット</span><kbd>⌘ K</kbd></button>
@@ -48,6 +49,6 @@ function App(){
    <div className={`composerDock ${shown.length?'hasMessages':''}`}><div className={`composerBox ${waveActive?'waveActive':''}`}><div className="waveFlash" aria-hidden="true"><i/><i/><i/></div><textarea ref={composer} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}}} placeholder="何でも聞いてください" rows={1}/><div className="composerBottom"><div className="composeTools"><button className="toolBtn" title="添付（近日対応）" onClick={()=>setError('ファイル添付はまだ対応していません。')}><Paperclip size={17}/></button><button className="toolBtn modelTag" onClick={()=>setSettings(true)}><Sparkles size={15}/> {model.split('/').pop()}</button></div><div className="sendGroup"><span className="privacyNote"><ShieldCheck size={13}/> キーはこの端末から直接Groqへ</span><button ref={sendRef} className="sendBtn" disabled={loading||!input.trim()} onClick={()=>send()} aria-label="送信">{loading?<span className="loader"/>:<ArrowUp size={19}/>}</button></div></div></div><div className="footnote">WavesはAIです。大切な情報は回答を確認してください。</div>{error&&<div className="errorToast" role="alert">{error}<button onClick={()=>setError('')}><X size={14}/></button></div>}</div>
   </section>
   {settings&&<div className="modalBack" onClick={()=>setSettings(false)}><section className="settingsModal" onClick={e=>e.stopPropagation()}><div className="modalHead"><div><div className="modalIcon"><KeyRound size={18}/></div><h2>接続設定</h2><p>あなたのGroq APIキーで会話を有効にします。</p></div><button className="iconBtn" onClick={()=>setSettings(false)}><X size={18}/></button></div><label className="fieldLabel" htmlFor="apiKey">Groq API key</label><input id="apiKey" type="password" autoComplete="off" value={apiKey} onChange={e=>setApiKey(e.target.value)} placeholder="gsk_…"/><div className="keyHelp">キーはブラウザからGroqへ直接送信します。サーバーには保存しません。</div><label className="remember"><input type="checkbox" checked={remember} onChange={e=>setRemember(e.target.checked)}/>この端末にキーを保存する</label><div className="modalActions"><a href="https://console.groq.com/keys" target="_blank" rel="noreferrer">Groq Consoleでキーを作成 ↗</a><button className="primaryBtn" onClick={async()=>{if(!apiKey.trim()){setError('APIキーを入力してください。');return}if(remember)localStorage.setItem('waves-groq-key',apiKey);else localStorage.removeItem('waves-groq-key');const ok=await loadModels();if(ok)setSettings(false)}}>接続してモデル取得 <ArrowUp size={15}/></button></div><div className="privacyCard"><ShieldCheck size={17}/><span><b>キーの扱い</b><br/>キーはこのブラウザ内だけで扱い、会話内容はGroq APIへ送られます。公開アプリに共通キーは埋め込んでいません。</span></div></section></div>}
- </main>
+ </main></DistortionWave>
 }
 export default App;
