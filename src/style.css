@@ -42,3 +42,14 @@
  .eyebrow{margin-bottom:12px}
  .starterGrid{margin-top:22px}
 }
+@media(min-width:701px){
+ .welcome h1{font-size:clamp(40px,5.5vw,62px);line-height:1.02}
+ .heroOrb{width:42px;height:42px;margin-bottom:7px}
+ .heroOrb canvas{width:42px!important;height:42px!important}
+ .eyebrow{margin-bottom:8px}
+ .welcomeSub{margin-top:10px}
+ .setupBeam{margin-top:16px}
+ .starterGrid{margin-top:16px;gap:8px}
+ .starter{height:60px}
+}
+@media(max-width:700px){.welcome h1{font-size:clamp(40px,11vw,52px)}}
