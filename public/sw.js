@@ -1,5 +1,5 @@
-const CACHE = 'waves-assistant-v2';
-const SHELL = ['/', '/manifest.webmanifest', '/icon.svg'];
+const CACHE = 'waves-assistant-v3';
+const SHELL = ['/', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
